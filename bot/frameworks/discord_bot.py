@@ -54,7 +54,10 @@ async def 인증(ctx, *, 기록: str = None):
 
     uc = RecordWorkoutUseCase(user_repo, record_repo)
     success, message = uc.execute(str(ctx.author.id), 기록, image_url)
-    await ctx.send(f"✅ {ctx.author.mention}님의 운동 기록이 저장되었습니다!")
+    if success:
+        await ctx.send(f"✅ {ctx.author.mention}님의 운동 기록이 저장되었습니다!")
+    else:
+        await ctx.send(f"❌{ctx.author.mention}님은 {message}")
 
 @bot.command()
 async def 현황(ctx):

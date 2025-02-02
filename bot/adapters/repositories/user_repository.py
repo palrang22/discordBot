@@ -2,7 +2,7 @@ import json
 import os
 
 class UserRepository:
-    def __init__(self, filepath = os.path.join("frameworks", "data", "users.json")):
+    def __init__(self, filepath = os.path.join("bot", "frameworks", "data", "users.json")):
         self.filepath = filepath
 
     def load(self):

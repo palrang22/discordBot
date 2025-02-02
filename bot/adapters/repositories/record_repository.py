@@ -2,7 +2,7 @@ import json
 import os
 
 class RecordRepository:
-    def __init__(self, filepath = os.path.join("frameworks", "data", "records.json")):
+    def __init__(self, filepath = os.path.join("bot", "frameworks", "data", "records.json")):
         self.filepath = filepath
 
     def load(self):
