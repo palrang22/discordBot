@@ -22,6 +22,7 @@ from core.usecases.register_user import RegisterUserUseCase
 from core.usecases.record_workout import RecordWorkoutUseCase
 from core.usecases.get_status import GetStatusUseCase
 from core.usecases.calculate_penalty import CalculatePenaltyUseCase
+from core.usecases.count_records import CountRecordsUseCase
 
 @bot.event
 async def on_ready():
@@ -55,7 +56,9 @@ async def 인증(ctx, *, 기록: str = None):
     uc = RecordWorkoutUseCase(user_repo, record_repo)
     success, message = uc.execute(str(ctx.author.id), 기록, image_url)
     if success:
-        await ctx.send(f"✅ {ctx.author.mention}님의 운동 기록이 저장되었습니다!")
+        count_uc = CountRecordsUseCase(record_repo)
+        count = count_uc.execute(str(ctx.author.id))
+        await ctx.send(f"✅ 운동 기록이 저장되었습니다! {ctx.author.mention}님의 이번 주 운동 횟수: {count}회")
     else:
         await ctx.send(f"❌{ctx.author.mention}님은 {message}")
 
