@@ -1,4 +1,4 @@
-from bot.adapters.repositories.db_connection import get_db_connection
+from adapters.repositories.db_connection import get_db_connection
 
 class RecordRepository:
     def __init__(self):
