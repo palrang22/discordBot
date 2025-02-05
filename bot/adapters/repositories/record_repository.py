@@ -1,30 +1,28 @@
-import json
-import os
+from bot.adapters.repositories.db_connection import get_db_connection
 
 class RecordRepository:
-    def __init__(self, filepath = os.path.join("bot", "frameworks", "data", "records.json")):
-        self.filepath = filepath
+    def __init__(self):
+        self.conn = get_db_connection()
+        self.cur = self.conn.cursor()
 
-    def load(self):
-        try:
-            with open(self.filepath, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except FileNotFoundError:
-            return {}
-        
-    def save(self, data):
-        with open(self.filepath, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=4, ensure_ascii=False)
-
-    def add_record(self, week: str, user_id: str, record: dict):
-        data = self.load()
-        if week not in data:
-            data[week] = {}
-        if user_id not in data[week]:
-            data[week][user_id] = []
-        data[week][user_id].append(record)
-        self.save(data)
+    def add_record(self, week: str, user_id: str, record_data: dict):
+        query = """
+        INSERT INTO records (user_id, week, date, word, image)
+        VALUES (%s, %s, %s, %s, %s)
+        """
+        self.cur.execute(query, (user_id, week, record_data["date"], record_data["word"], record_data["image"]))
+        self.conn.commit()
 
     def get_week_records(self, week: str, user_id: str):
-        data = self.load()
-        return data.get(week, {}).get(user_id, [])
+        query = """
+        SELECT date, word, image
+        FROM records
+        WHERE week = %s AND user_id = %s
+        """
+        self.cur.execute(query, (week, user_id))
+        results = self.cur.fetchall()
+        return [{"date": row[0], "word": row[1], "image": row[2]} for row in results]
+    
+    def close(self):
+        self.cur.close()
+        self.conn.close()
