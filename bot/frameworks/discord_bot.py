@@ -76,15 +76,30 @@ async def 현황(ctx):
         print(f"현황 커맨드 호출됨 - GetstatusUseCase 호출됨: {user_repo}, {record_repo}")
         status = uc.execute()
         msg = "**📊 이번 주 운동 인증 현황**\n"
-        for user_id, data in status.items():
+
+        # 2000자를 넘어가면 오류 호출, 메시지를 잘라서 보내야 함
+        splited_messages = []
+
+        for _, data in status.items():
             count = data["count"]
-            msg += f"\n👤 {data["name"]} - {count}회 인증\n"
+            msg_count += f"\n👤 {data["name"]} - {count}회 인증\n"
             if count > 0:
                 for entry in data["records"]:
-                    msg += f"📅 {entry['date']} - {entry['word']} | [사진 보기]({entry['image']})\n"
+                    msg_count += f"📅 {entry['date']} | {entry['word']} | [사진 보기]({entry['image']})\n"
             else:
-                msg += "❌ 인증 기록이 없습니다.\n"
-        await ctx.send(msg)
+                msg_count += "❌ 인증 기록이 없습니다.\n"
+            
+            if len(msg) + len(msg_count) > 1800:
+                splited_messages.append(msg)
+                msg = msg_count
+            else:
+                msg += msg_count
+        if msg:
+            splited_messages.append(msg)
+            
+        for message in splited_messages:
+            await ctx.send(message)
+
         print("현황 메시지 전송 완료")
     except Exception as e:
         print(f"현황 커맨드 호출중 오류 발생: {e}")
