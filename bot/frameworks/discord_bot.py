@@ -76,6 +76,7 @@ async def 현황(ctx):
         print(f"현황 커맨드 호출됨 - GetstatusUseCase 호출됨: {user_repo}, {record_repo}")
         status = uc.execute()
         msg = "**📊 이번 주 운동 인증 현황**\n"
+        msg_count = ""
 
         # 2000자를 넘어가면 오류 호출, 메시지를 잘라서 보내야 함
         splited_messages = []
