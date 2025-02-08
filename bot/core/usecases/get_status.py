@@ -14,7 +14,7 @@ class GetStatusUseCase:
 
         status = {}
         for user_id, user_data in users.items():
-            print(f"GetStatusUseCase for문 돌아가는중: {user_id}, {user_data[0]}")
+            print(f"GetStatusUseCase for문 돌아가는중: {user_id}, {user_data['name']}")
             records = self.record_repo.get_week_records(current_week, user_id)
             status[user_id] = {
                 "name": user_data["name"],

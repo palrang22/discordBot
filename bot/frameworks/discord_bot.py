@@ -48,6 +48,7 @@ async def 등록(ctx):
 
 @bot.command()
 async def 인증(ctx, *, 기록: str = None):
+    print("인증 커맨드 호출됨")
     if not ctx.message.attachments:
         await ctx.send("❌ 운동 인증 사진을 함께 올려주세요!")
         return
@@ -58,29 +59,40 @@ async def 인증(ctx, *, 기록: str = None):
     if success:
         count_uc = CountRecordsUseCase(record_repo)
         count = count_uc.execute(str(ctx.author.id))
+        print("인증 커맨드 호출됨 - 운동 기록 저장 완료")
         await ctx.send(f"✅ 운동 기록이 저장되었습니다! {ctx.author.mention}님의 이번 주 운동 횟수: {count}회")
     else:
+        print("인증 커맨드 호출됨 - 운동 기록 저장 실패")
         await ctx.send(f"❌{ctx.author.mention}님은 {message}")
 
 @bot.command()
 async def 현황(ctx):
-    uc = GetStatusUseCase(user_repo, record_repo)
-    status = uc.execute()
-    msg = "**📊 이번 주 운동 인증 현황**\n"
-    for user_id, data in status.items():
-        records = data["records"]
-        count = len(records)
-        msg += f"\n👤 {data['name']} - {count}회 인증\n"
-        if count > 0:
-            for entry in records:
-                msg += f"📅 {entry['date']} - {entry['word']} | [사진 보기]({entry['image']})\n"
-        else:
-            msg += "❌ 인증 기록이 없습니다.\n"
-    await ctx.send(msg)
+    print("현황 커맨드 호출됨")
+    try:
+        uc = GetStatusUseCase(user_repo, record_repo)
+        print(f"현황 커맨드 호출됨 - GetstatusUseCase 호출됨: {user_repo}, {record_repo}")
+        status = uc.execute()
+        msg = "**📊 이번 주 운동 인증 현황**\n"
+        for user_id, data in status.items():
+            records = data["records"]
+            count = len(records)
+            msg += f"\n👤 {data['name']} - {count}회 인증\n"
+            if count > 0:
+                for entry in records:
+                    msg += f"📅 {entry['date']} - {entry['word']} | [사진 보기]({entry['image']})\n"
+            else:
+                msg += "❌ 인증 기록이 없습니다.\n"
+        await ctx.send(msg)
+        print("현황 메시지 전송 완료")
+    except Exception as e:
+        print(f"현황 커맨드 호출중 오류 발생: {e}")
+        await ctx.send("🚨 현황 호출중 오류가 발생했습니다.")
 
 @bot.command()
 async def 벌금(ctx):
+    print('벌금 커맨드 호출됨')
     uc = CalculatePenaltyUseCase(user_repo, record_repo)
+    print(f"벌금 커맨드 호출됨 - CalculatePenaltyUseCase 호출됨: {user_repo}, {record_repo}")
     penalty_data = uc.execute()
     if penalty_data:
         msg = "**💰 운동 인증 벌금 내역**\n"
