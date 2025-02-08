@@ -16,10 +16,18 @@ class RecordRepository:
         try:
             self.cur.execute(query)
             results = self.cur.fetchall()
-
             records = {}
             for row in results:
-                records[row[0]] = {"week": row[1], "date": row[2], "word": row[3], "image": row[4]}
+                user_id, week, date, word, image = row
+                record_data = {"date": date, "word": word, "image": image}
+
+                if week not in records:
+                    records[week] = {}
+
+                if user_id not in records[week]:
+                    records[week][user_id] = []
+
+                records[week][user_id].append(record_data)
             return records
         except Exception as e:
             print(f"[load] 데이터 불러오기 실패: {e}")

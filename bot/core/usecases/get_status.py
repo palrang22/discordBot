@@ -8,16 +8,15 @@ class GetStatusUseCase:
     def execute(self):
         print("GetStatusUseCase.execute() 호출됨")
         current_week = get_week()
-        print(f"현재 주: {current_week}")
         users = self.user_repo.load()
         print(f"로드된 사용자 수: {len(users)}")
-
         status = {}
         for user_id, user_data in users.items():
             print(f"GetStatusUseCase for문 돌아가는중: {user_id}, {user_data['name']}")
             records = self.record_repo.get_week_records(current_week, user_id)
             status[user_id] = {
                 "name": user_data["name"],
-                "records": records
+                "records": records,
+                "count": len(records)
             }
         return status

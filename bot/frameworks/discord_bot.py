@@ -22,7 +22,6 @@ from core.usecases.register_user import RegisterUserUseCase
 from core.usecases.record_workout import RecordWorkoutUseCase
 from core.usecases.get_status import GetStatusUseCase
 from core.usecases.calculate_penalty import CalculatePenaltyUseCase
-from core.usecases.count_records import CountRecordsUseCase
 
 @bot.event
 async def on_ready():
@@ -57,8 +56,9 @@ async def 인증(ctx, *, 기록: str = None):
     uc = RecordWorkoutUseCase(user_repo, record_repo)
     success, message = uc.execute(str(ctx.author.id), 기록, image_url)
     if success:
-        count_uc = CountRecordsUseCase(record_repo)
-        count = count_uc.execute(str(ctx.author.id))
+        status_uc = GetStatusUseCase(user_repo, record_repo)
+        user_status = status_uc.execute(str(ctx.author.id))
+        count = user_status["count"]
         print("인증 커맨드 호출됨 - 운동 기록 저장 완료")
         await ctx.send(f"✅ 운동 기록이 저장되었습니다! {ctx.author.mention}님의 이번 주 운동 횟수: {count}회")
     else:
@@ -74,11 +74,10 @@ async def 현황(ctx):
         status = uc.execute()
         msg = "**📊 이번 주 운동 인증 현황**\n"
         for user_id, data in status.items():
-            records = data["records"]
-            count = len(records)
-            msg += f"\n👤 {data['name']} - {count}회 인증\n"
+            count = data["count"]
+            msg += f"\n👤 {data["name"]} - {count}회 인증\n"
             if count > 0:
-                for entry in records:
+                for entry in data["records"]:
                     msg += f"📅 {entry['date']} - {entry['word']} | [사진 보기]({entry['image']})\n"
             else:
                 msg += "❌ 인증 기록이 없습니다.\n"
