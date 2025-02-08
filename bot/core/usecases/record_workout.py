@@ -36,7 +36,7 @@ class RecordWorkoutUseCase:
     def check_today_record(self, user_id: str):
         try:
             current_week = get_week()
-            today_date = str(datetime.date.today)
+            today_date = str(datetime.date.today())
             user_records = self.record_repo.get_week_records(current_week, user_id)
 
             for record in user_records:
