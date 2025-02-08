@@ -57,10 +57,13 @@ async def 인증(ctx, *, 기록: str = None):
     success, message = uc.execute(str(ctx.author.id), 기록, image_url)
     if success:
         status_uc = GetStatusUseCase(user_repo, record_repo)
-        user_status = status_uc.execute(str(ctx.author.id))
+        status = status_uc.execute()
+        user_status = status.get(str(ctx.author.id), {"count": 0}) #count:0은 예외처리
         count = user_status["count"]
+
         print("인증 커맨드 호출됨 - 운동 기록 저장 완료")
         await ctx.send(f"✅ 운동 기록이 저장되었습니다! {ctx.author.mention}님의 이번 주 운동 횟수: {count}회")
+
     else:
         print("인증 커맨드 호출됨 - 운동 기록 저장 실패")
         await ctx.send(f"❌{ctx.author.mention}님은 {message}")
