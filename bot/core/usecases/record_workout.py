@@ -1,6 +1,7 @@
 import datetime
 from core.entities.record import Record
 from utils.week_manager import get_week
+from utils.time_manager import get_kst_today
 
 class RecordWorkoutUseCase:
     def __init__(self, user_repo, record_repo):
@@ -22,7 +23,7 @@ class RecordWorkoutUseCase:
 
             current_week = get_week()
             record = Record(
-                date = str(datetime.date.today()),
+                date = str(get_kst_today()),
                 word = word,
                 image = image
             )
@@ -36,7 +37,7 @@ class RecordWorkoutUseCase:
     def check_today_record(self, user_id: str):
         try:
             current_week = get_week()
-            today_date = str(datetime.date.today())
+            today_date = str(get_kst_today())
             user_records = self.record_repo.get_week_records(current_week, user_id)
 
             for record in user_records:
