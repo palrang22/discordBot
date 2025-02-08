@@ -8,12 +8,16 @@ class CalculatePenaltyUseCase:
         self.record_repo = record_repo
 
     def execute(self):
+        print(f"CalculatePenaltyUseCase.execute() 호출됨")
         current_week = get_week()
+        print(f"현재 주: {current_week}")
         users = self.user_repo.load()
         records = self.record_repo.load()
+        print(f"DB 확인: {users[0]}, {records[0]}")
         penalty_data = {}
 
         for user_id, user_data in users.items():
+            print(f"사용자 확인: {user_id}, {user_data[0]}")
             joined_week = user_data["joined_week"]
             total_penalty = 0
 
